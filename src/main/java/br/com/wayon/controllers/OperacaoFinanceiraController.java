@@ -10,25 +10,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.wayon.commons.dto.ContaCorrenteDto;
+import br.com.wayon.commons.dto.OperacaoFinanceiraDto;
 import br.com.wayon.domains.ContaCorrente;
 import br.com.wayon.services.ContaCorrenteService;
+import br.com.wayon.services.OperacaoFinanceiraService;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/conta-corrente")
+@RequestMapping("/operacoes")
 @AllArgsConstructor
-public class ContaCorrenteController {
+public class OperacaoFinanceiraController {
 	
-	private ContaCorrenteService service;
+	private OperacaoFinanceiraService service;
 	
 	@PostMapping("/nova")
-	public ResponseEntity<?> criarNovaContaCorrente(@RequestBody ContaCorrenteDto contaCorrente) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(service.criarNovaContaCorrente(contaCorrente));
+	public ResponseEntity<?> criarNovaContaOperacao(@RequestBody OperacaoFinanceiraDto dto) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(service.criarNovaOperacao(dto));
 	}
-	
-	@PutMapping("/atualiza-saldo")
-	public ResponseEntity<?> atualizaSaldo(@RequestBody ContaCorrenteDto contaCorrente) {
-		return ResponseEntity.ok(service.atualizaSaldo(contaCorrente));
-	}
-
 }

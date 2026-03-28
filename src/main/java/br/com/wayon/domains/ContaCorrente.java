@@ -6,6 +6,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import br.com.wayon.commons.dto.ContaCorrenteDto;
 import br.com.wayon.domains.pk.ContaCorrentePK;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +22,15 @@ public class ContaCorrente {
 	@EmbeddedId
 	private ContaCorrentePK contaCorrente;
 	
-	private final BigDecimal saldo = BigDecimal.ZERO;
+	private BigDecimal saldo;
+	
+	public ContaCorrente(ContaCorrenteDto dto) {
+		this.contaCorrente = dto.getContaCorrente();
+		this.saldo = dto.getSaldo();
+	}
+	
+	public ContaCorrente(ContaCorrentePK pk) {
+		this.contaCorrente = pk;
+	}
 	
 }

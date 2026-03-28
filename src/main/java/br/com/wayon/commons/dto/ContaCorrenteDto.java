@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class NovaContaDto implements Serializable{
+public class ContaCorrenteDto implements Serializable{
 	private ContaCorrentePK contaCorrente;
+	private BigDecimal saldo;
 }
