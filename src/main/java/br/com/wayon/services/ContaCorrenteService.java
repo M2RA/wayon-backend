@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 
 import br.com.wayon.commons.dto.ContaCorrenteDto;
 import br.com.wayon.domains.ContaCorrente;
+import br.com.wayon.domains.pk.ContaCorrentePK;
 import br.com.wayon.exceptions.ChaveDuplicadaException;
 import br.com.wayon.exceptions.ContaCorrenteInexistenteException;
+import br.com.wayon.exceptions.ValorInvalidoException;
 import br.com.wayon.repositories.ContaCorrenteRepository;
 import lombok.AllArgsConstructor;
 
@@ -25,15 +27,34 @@ public class ContaCorrenteService {
 		return repository.save(novaContaCorrente(contaCorrente));
 	}
 	
-	public ContaCorrente atualizaSaldo(ContaCorrenteDto contaDto) {
-		if (repository.findById(contaDto.getContaCorrente()).isEmpty()) {
-			throw new ContaCorrenteInexistenteException("Conta Corrente inexistente");
-		} else if (repository.findById(contaDto.getContaCorrente()).get().getSaldo().compareTo(contaDto.getSaldo()) < 0) {
+	public ContaCorrente sacar(ContaCorrentePK contaCorrente, BigDecimal valorOperacao) {
+		
+		ContaCorrente contaCorrenteBase = repository.findById(contaCorrente).orElseThrow(() -> new ContaCorrenteInexistenteException("Conta Corrente Inexistente"));
+		
+		if (contaCorrenteBase.getSaldo().compareTo(valorOperacao) < 0) {
 			//Saldo nulo não será permitido
 			throw new ContaCorrenteInexistenteException("Saldo indisponível para esta operação");
+			
 		} else {
-			return repository.save(new ContaCorrente(contaDto));
+			//Atualiza o saldo
+			BigDecimal novoSaldo = contaCorrenteBase.getSaldo().subtract(valorOperacao);
+			contaCorrenteBase.setSaldo(novoSaldo);
+			return repository.save(contaCorrenteBase);
 		}
+	}
+
+	public ContaCorrente depositar(ContaCorrentePK contaCorrente, BigDecimal valorOperacao) {
+		
+		ContaCorrente contaCorrenteBase = repository.findById(contaCorrente).orElseThrow(() -> new ContaCorrenteInexistenteException("Conta Corrente Inexistente"));
+		
+		if(valorOperacao.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new ValorInvalidoException("Valor da operação deve ser maior que zero");
+		}
+		
+		//Atualiza o saldo
+		BigDecimal novoSaldo = contaCorrenteBase.getSaldo().subtract(valorOperacao);
+		contaCorrenteBase.setSaldo(novoSaldo);
+		return repository.save(contaCorrenteBase);
 	}
 	
 	private ContaCorrente novaContaCorrente(ContaCorrenteDto contaCorrente) {
