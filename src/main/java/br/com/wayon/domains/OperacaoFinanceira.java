@@ -21,7 +21,6 @@ import com.sun.istack.NotNull;
 
 import br.com.wayon.commons.dto.OperacaoFinanceiraDto;
 import br.com.wayon.domains.enums.EnumTipoOperacao;
-import br.com.wayon.domains.pk.ContaCorrentePK;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -41,12 +40,13 @@ public class OperacaoFinanceira {
 	private EnumTipoOperacao tipoOperacao;
 
 	@ManyToOne
-	@JoinColumns(foreignKey = @ForeignKey(name = "FK_CONTA_CORRENTE"), 
-	             value = {@JoinColumn(name="agencia"), @JoinColumn(name="numero_conta")})
+	@JoinColumn(name="conta_corrente")
 	private ContaCorrente contaCorrente;
 
 	@NotNull
 	private BigDecimal valorOperacao;
+	
+	private BigDecimal saldoInstantaneo;
 	
 	private LocalDateTime dataAgendamento;
 
@@ -54,10 +54,11 @@ public class OperacaoFinanceira {
 	
 	public OperacaoFinanceira(OperacaoFinanceiraDto dto) {
 		this.tipoOperacao = dto.getTipoOperacao();
-		this.contaCorrente = new ContaCorrente(dto.getContaCorrente());
+		this.contaCorrente = dto.getContaCorrente();
 		this.dataAgendamento = LocalDateTime.now();
 		this.dataExecucao = dto.getDataExecucao();
 		this.valorOperacao = dto.getValorOperacao();
+		this.saldoInstantaneo = dto.getSaldoInstantaneo();
 	}
 	
 }

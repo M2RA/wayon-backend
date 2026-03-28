@@ -13,12 +13,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sun.istack.NotNull;
 
 import br.com.wayon.domains.ContaCorrente;
 import br.com.wayon.domains.OperacaoFinanceira;
 import br.com.wayon.domains.enums.EnumTipoOperacao;
-import br.com.wayon.domains.pk.ContaCorrentePK;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,15 +27,18 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(value = Include.NON_NULL)
 public class OperacaoFinanceiraResponseDto {
 
 	private Long id;
 	
 	private EnumTipoOperacao tipoOperacao;
 
-	private ContaCorrentePK contaCorrente;
+	private Long contaCorrente;
 
 	private BigDecimal valorOperacao;
+
+	private BigDecimal saldoInstantaneo;
 	
 	private LocalDateTime dataAgendamento;
 
@@ -47,6 +51,7 @@ public class OperacaoFinanceiraResponseDto {
 		this.valorOperacao = operacao.getValorOperacao();
 		this.dataAgendamento = operacao.getDataAgendamento();
 		this.dataExecucao = operacao.getDataExecucao();
+		this.saldoInstantaneo = operacao.getContaCorrente().getSaldo();
 	}
 
 }
