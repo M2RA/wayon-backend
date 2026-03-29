@@ -2,41 +2,44 @@ package br.com.wayon.commons.utils;
 
 import java.math.BigDecimal;
 
+import br.com.wayon.domains.enums.EnumAliquotas;
+
 public class Utils {
 	
-	public static BigDecimal getValorTransferencia(Integer prazo, BigDecimal valorTransferido) {
+	public static BigDecimal getValorTransferencia(Long prazo, BigDecimal valorTransferido) {
 		
-		if(prazo == 0) {
+		if(prazo == 0l) {
 
-			return getTaxaTransferencia(valorTransferido,new BigDecimal("3"), new BigDecimal("2.5"));
+			return getTaxaTransferencia(valorTransferido,new BigDecimal("3"), EnumAliquotas.IMEDIATA);
 			
-		} else if (prazo > 0 && prazo <= 10) {
+		} else if (prazo > 0l && prazo <= 10l) {
 			
-			return getTaxaTransferencia(valorTransferido ,new BigDecimal("12"), BigDecimal.ZERO);
+			return getTaxaTransferencia(valorTransferido ,new BigDecimal("12"), EnumAliquotas.PRAZO10);
 			
-		} else if (prazo > 10 && prazo <= 20) {
+		} else if (prazo > 10l && prazo <= 20l) {
 			
-			return getTaxaTransferencia(valorTransferido ,BigDecimal.ZERO, new BigDecimal("8.2"));
+			return getTaxaTransferencia(valorTransferido ,BigDecimal.ZERO, EnumAliquotas.PRAZO20);
 			
-		} else if (prazo > 20 && prazo <= 30) {
+		} else if (prazo > 20l && prazo <= 30l) {
 			
-			return getTaxaTransferencia(valorTransferido ,BigDecimal.ZERO, new BigDecimal("6.9"));
+			return getTaxaTransferencia(valorTransferido ,BigDecimal.ZERO, EnumAliquotas.PRAZO30);
 			
-		} else if (prazo > 31 && prazo <= 40) {
+		} else if (prazo > 31l && prazo <= 40l) {
 			
-			return getTaxaTransferencia(valorTransferido ,BigDecimal.ZERO, new BigDecimal("4.7"));
+			return getTaxaTransferencia(valorTransferido ,BigDecimal.ZERO, EnumAliquotas.PRAZO40);
 			
-		} else if (prazo > 41 && prazo <= 50) {
+		} else if (prazo > 41l && prazo <= 50l) {
 			
-			return getTaxaTransferencia(valorTransferido ,BigDecimal.ZERO, new BigDecimal("1.7"));
+			return getTaxaTransferencia(valorTransferido ,BigDecimal.ZERO, EnumAliquotas.PRAZO50);
 			
 		} else {
 			throw new RuntimeException("Prazo extrapolou a antecedência máxima. Transferência não pode ser realizada.");
 		}
 	}
 
-	private static BigDecimal getTaxaTransferencia(BigDecimal valorRequerido, BigDecimal valorAdicional, BigDecimal aliquota) {
-		return valorRequerido.multiply(aliquota).add(valorAdicional);
+	private static BigDecimal getTaxaTransferencia(BigDecimal valorRequerido, BigDecimal valorAdicional, EnumAliquotas aliquota) {
+		BigDecimal valorTaxa = valorRequerido.multiply(aliquota.getAliquota());
+		BigDecimal valorFinal = valorTaxa.add(valorAdicional);
+		return valorFinal;
 	}
-
 }

@@ -34,6 +34,7 @@ public class ContaCorrenteService {
 		novaOperacao.setSaldoInstantaneo(novaConta.getSaldo());
 		novaOperacao.setTipoOperacao(EnumTipoOperacao.DEPOSITO);
 		novaOperacao.setValorOperacao(novaConta.getSaldo());
+		novaOperacao.setObservacao("Saldo Inicial");
 		operacaoFinanceiraRepository.save(new OperacaoFinanceira(novaOperacao));
 		
 		return novaConta;

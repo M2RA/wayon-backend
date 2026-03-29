@@ -13,12 +13,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sun.istack.NotNull;
 
 import br.com.wayon.domains.ContaCorrente;
 import br.com.wayon.domains.OperacaoFinanceira;
+import br.com.wayon.domains.enums.EnumStatusOperacao;
 import br.com.wayon.domains.enums.EnumTipoOperacao;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,9 +42,13 @@ public class OperacaoFinanceiraResponseDto {
 
 	private BigDecimal saldoInstantaneo;
 	
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime dataAgendamento;
 
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime dataExecucao;
+	
+	private String observacao;
 	
 	public OperacaoFinanceiraResponseDto(OperacaoFinanceira operacao) {
 		this.id = operacao.getId();
@@ -52,6 +58,7 @@ public class OperacaoFinanceiraResponseDto {
 		this.dataAgendamento = operacao.getDataAgendamento();
 		this.dataExecucao = operacao.getDataExecucao();
 		this.saldoInstantaneo = operacao.getContaCorrente().getSaldo();
+		this.observacao = operacao.getObservacao();
 	}
 
 }

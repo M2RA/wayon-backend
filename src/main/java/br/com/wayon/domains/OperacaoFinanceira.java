@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import com.sun.istack.NotNull;
 
 import br.com.wayon.commons.dto.OperacaoFinanceiraDto;
+import br.com.wayon.domains.enums.EnumStatusOperacao;
 import br.com.wayon.domains.enums.EnumTipoOperacao;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -52,6 +53,8 @@ public class OperacaoFinanceira {
 
 	private LocalDateTime dataExecucao;
 	
+	private String observacao;
+	
 	public OperacaoFinanceira(OperacaoFinanceiraDto dto) {
 		this.tipoOperacao = dto.getTipoOperacao();
 		this.contaCorrente = dto.getContaCorrente();
@@ -59,6 +62,7 @@ public class OperacaoFinanceira {
 		this.dataExecucao = dto.getDataExecucao();
 		this.valorOperacao = dto.getValorOperacao();
 		this.saldoInstantaneo = dto.getSaldoInstantaneo();
+		this.observacao= dto.getObservacao();
 	}
 	
 }
