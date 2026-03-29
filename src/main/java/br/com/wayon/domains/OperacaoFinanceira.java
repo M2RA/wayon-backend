@@ -2,6 +2,7 @@ package br.com.wayon.domains;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import javax.annotation.Generated;

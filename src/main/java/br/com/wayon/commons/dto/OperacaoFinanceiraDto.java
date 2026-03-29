@@ -2,6 +2,7 @@ package br.com.wayon.commons.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.UUID;
 
 import javax.annotation.Generated;
