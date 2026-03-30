@@ -25,10 +25,4 @@ public class ContaCorrenteController {
 	public ResponseEntity<?> criarNovaContaCorrente(@RequestBody ContaCorrenteDto contaCorrente) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(service.criarNovaContaCorrente(contaCorrente));
 	}
-	
-//	@PutMapping("/atualiza-saldo")
-//	public ResponseEntity<?> atualizaSaldo(@RequestBody ContaCorrenteDto contaCorrente) {
-//		return ResponseEntity.ok(service.atualizaSaldo(contaCorrente));
-//	}
-
 }

@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import br.com.wayon.domains.ContaCorrente;
 
 @Repository
-public interface ContaCorrenteRepository extends JpaRepository<ContaCorrente, Long>{
+public interface ContaCorrenteRepository extends JpaRepository<ContaCorrente, String>{
 
 }

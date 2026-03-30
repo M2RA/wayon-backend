@@ -14,6 +14,7 @@ public interface OperacaoFinanceiraRepository extends JpaRepository<OperacaoFina
 	@Query("select operacoes "
 			+ "from OperacaoFinanceira operacoes "
 			+ "where 1 = 1 "
-			+ "and operacoes.contaCorrente.contaCorrente = :contaCorrente")
-	public List<OperacaoFinanceira> getExtrato(Long contaCorrente);
+			+ "and operacoes.contaCorrente.numeroConta = :numeroConta "
+			+ "order by operacoes.id desc")
+	public List<OperacaoFinanceira> getExtrato(String numeroConta);
 }

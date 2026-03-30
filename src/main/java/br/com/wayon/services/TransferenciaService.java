@@ -37,7 +37,7 @@ public class TransferenciaService {
 		}
 		
 		//As operações devem ocorrer em contas diferentes
-		if(Long.compare(dto.getSaida().getContaCorrente().getContaCorrente(), dto.getEntrada().getContaCorrente().getContaCorrente()) == 0) {
+		if(dto.getSaida().getContaCorrente().getNumeroConta().equalsIgnoreCase(dto.getEntrada().getContaCorrente().getNumeroConta())) {
 			throw new ValorInvalidoException("Conta de Origem x Destino devem ser diferentes");
 		}
 		
@@ -47,8 +47,13 @@ public class TransferenciaService {
 		}
 		
 		//As datas de execução de saída deve ser menor que a data de execução da entrada
-		if(ChronoUnit.DAYS.between(dto.getSaida().getDataExecucao().toLocalDate(),dto.getEntrada().getDataExecucao().toLocalDate()) > 0) {
+		if(ChronoUnit.DAYS.between(dto.getSaida().getDataExecucao(),dto.getEntrada().getDataExecucao()) > 0) {
 			throw new ValorInvalidoException("Data de entrada não pode ser maior que a data de saída");
+		}
+		
+		//A data de execução não pode ser uma data anterior
+		if(ChronoUnit.DAYS.between(LocalDate.now(),dto.getSaida().getDataExecucao()) < 0) {
+			throw new ValorInvalidoException("A execução não pode ser programada para uma data anterior");
 		}
 		
 		return true;

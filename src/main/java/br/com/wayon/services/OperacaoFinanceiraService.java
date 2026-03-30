@@ -3,6 +3,7 @@ package br.com.wayon.services;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import br.com.wayon.domains.ContaCorrente;
 import br.com.wayon.domains.OperacaoFinanceira;
 import br.com.wayon.domains.enums.EnumStatusOperacao;
 import br.com.wayon.domains.enums.EnumTipoOperacao;
+import br.com.wayon.exceptions.ContaCorrenteInexistenteException;
 import br.com.wayon.exceptions.ValorInvalidoException;
 import br.com.wayon.repositories.OperacaoFinanceiraRepository;
 import lombok.AllArgsConstructor;
@@ -29,22 +31,29 @@ public class OperacaoFinanceiraService {
 	private OperacaoFinanceiraRepository repository;
 	
 	
-	public List<OperacaoFinanceiraResponseDto> getExtrato(Long contaCorrente) {
+	public List<OperacaoFinanceiraResponseDto> getExtrato(String contaCorrente) {
 		
-		List<OperacaoFinanceira> operacoesBase = repository.getExtrato(contaCorrente);
+		List<OperacaoFinanceira> operacoesBase = new ArrayList<>();
+		
+		operacoesBase = repository.getExtrato(contaCorrente);
+		
+		if(operacoesBase.isEmpty() || operacoesBase.size() == 0) {
+			throw new ContaCorrenteInexistenteException("Conta Corrente não existe ou não possui operações registradas");
+		}
 		
 		List<OperacaoFinanceiraResponseDto> operacoes = new ArrayList<>();
 		
 		operacoesBase.forEach(o -> {
 			OperacaoFinanceiraResponseDto operacao = new OperacaoFinanceiraResponseDto();
 			
-			operacao.setContaCorrente(o.getContaCorrente().getContaCorrente());
+			operacao.setNumeroConta(o.getContaCorrente().getNumeroConta());
 			operacao.setDataAgendamento(o.getDataAgendamento());
 			operacao.setDataExecucao(o.getDataExecucao());
 			operacao.setId(o.getId());
 			operacao.setSaldoInstantaneo(o.getSaldoInstantaneo());
 			operacao.setTipoOperacao(o.getTipoOperacao());
 			operacao.setValorOperacao(o.getValorOperacao());
+			operacao.setObservacao(o.getObservacao());
 			
 			operacoes.add(operacao);
 		});
@@ -53,17 +62,18 @@ public class OperacaoFinanceiraService {
 	}
 	
 	public OperacaoFinanceiraResponseDto criarNovaOperacao(OperacaoFinanceiraDto dto) {
-		
+		dto.setObservacao("Transferência efetuada");
 		//Primeiro vai lançar o desconto da Taxa de transferência se houver
 		if(dto.getTipoOperacao().equals(EnumTipoOperacao.SAQUE)) {
 			
 			OperacaoFinanceiraResponseDto operacaoTaxa = registraOperacaoTaxaTransferencia(dto);
 			OperacaoFinanceiraDto novaOperacao = new OperacaoFinanceiraDto();
-			novaOperacao.setContaCorrente(new ContaCorrente(operacaoTaxa.getContaCorrente()));
-			novaOperacao.setDataExecucao(operacaoTaxa.getDataExecucao());
+			novaOperacao.setContaCorrente(new ContaCorrente(operacaoTaxa.getNumeroConta()));
+			novaOperacao.setDataExecucao(operacaoTaxa.getDataExecucao().toLocalDate());
 			novaOperacao.setTipoOperacao(dto.getTipoOperacao());
 			novaOperacao.setValorOperacao(dto.getValorOperacao());
 			novaOperacao.setObservacao(dto.getObservacao());
+			
 			return novaOperacao(novaOperacao);
 			
 		} else {
@@ -73,7 +83,7 @@ public class OperacaoFinanceiraService {
 	}
 	
 	private OperacaoFinanceiraResponseDto registraOperacaoTaxaTransferencia(OperacaoFinanceiraDto dto) {
-		Long prazo = ChronoUnit.DAYS.between(LocalDate.now(),dto.getDataExecucao().toLocalDate());
+		Long prazo = ChronoUnit.DAYS.between(LocalDate.now(),dto.getDataExecucao());
 		
 		BigDecimal taxaTransferencia = Utils.getValorTransferencia(prazo, dto.getValorOperacao());
 		
@@ -81,7 +91,7 @@ public class OperacaoFinanceiraService {
 		
 		novaOperacao.setContaCorrente(dto.getContaCorrente());
 		novaOperacao.setDataExecucao(dto.getDataExecucao());
-		novaOperacao.setObservacao("Taxa de Transferência");
+		novaOperacao.setObservacao("Cobrança da Taxa de Transferência");
 		novaOperacao.setTipoOperacao(EnumTipoOperacao.SAQUE);
 		novaOperacao.setValorOperacao(taxaTransferencia);
 		
@@ -94,14 +104,14 @@ public class OperacaoFinanceiraService {
 		// Se operação de saída
 		if(dto.getTipoOperacao().equals(EnumTipoOperacao.SAQUE)) {
 			//Atualiza Saldo
-			contaAtualizada = contaCorrenteService.sacar(dto.getContaCorrente().getContaCorrente(),dto.getValorOperacao());
+			contaAtualizada = contaCorrenteService.sacar(dto.getContaCorrente().getNumeroConta(),dto.getValorOperacao());
 			dto.setContaCorrente(contaAtualizada);
 			dto.setSaldoInstantaneo(contaAtualizada.getSaldo());
 		} else if (dto.getTipoOperacao().equals(EnumTipoOperacao.DEPOSITO)) {
-			contaAtualizada = contaCorrenteService.depositar(dto.getContaCorrente().getContaCorrente(), dto.getValorOperacao());
+			contaAtualizada = contaCorrenteService.depositar(dto.getContaCorrente().getNumeroConta(), dto.getValorOperacao());
 			dto.setContaCorrente(contaAtualizada);
 			dto.setSaldoInstantaneo(contaAtualizada.getSaldo());
-		} else if(dto.getDataExecucao().compareTo(LocalDateTime.now()) <= 0) {
+		} else if(dto.getDataExecucao().atTime(LocalTime.now()).compareTo(LocalDateTime.now()) <= 0) {
 			throw new ValorInvalidoException("A data de execução deve ser maior que a data atual");
 		} else {
 			throw new ValorInvalidoException("Tipo operação Inválida. Valores válidos: SAQUE ou DEPOSITO");

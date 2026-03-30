@@ -60,7 +60,7 @@ public class OperacaoFinanceira {
 		this.tipoOperacao = dto.getTipoOperacao();
 		this.contaCorrente = dto.getContaCorrente();
 		this.dataAgendamento = LocalDateTime.now();
-		this.dataExecucao = dto.getDataExecucao();
+		this.dataExecucao = dto.getDataExecucao().atTime(LocalTime.now());
 		this.valorOperacao = dto.getValorOperacao();
 		this.saldoInstantaneo = dto.getSaldoInstantaneo();
 		this.observacao= dto.getObservacao();

@@ -36,7 +36,7 @@ public class OperacaoFinanceiraResponseDto {
 	
 	private EnumTipoOperacao tipoOperacao;
 
-	private Long contaCorrente;
+	private String numeroConta;
 
 	private BigDecimal valorOperacao;
 
@@ -53,7 +53,7 @@ public class OperacaoFinanceiraResponseDto {
 	public OperacaoFinanceiraResponseDto(OperacaoFinanceira operacao) {
 		this.id = operacao.getId();
 		this.tipoOperacao = operacao.getTipoOperacao();
-		this.contaCorrente = operacao.getContaCorrente().getContaCorrente();
+		this.numeroConta = operacao.getContaCorrente().getNumeroConta();
 		this.valorOperacao = operacao.getValorOperacao();
 		this.dataAgendamento = operacao.getDataAgendamento();
 		this.dataExecucao = operacao.getDataExecucao();

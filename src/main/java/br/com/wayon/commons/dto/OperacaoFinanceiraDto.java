@@ -1,6 +1,7 @@
 package br.com.wayon.commons.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.UUID;
@@ -35,8 +36,8 @@ public class OperacaoFinanceiraDto {
 	
 	private BigDecimal saldoInstantaneo;
 	
-	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-	private LocalDateTime dataExecucao;
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private LocalDate dataExecucao;
 	
 	private String observacao;
 }

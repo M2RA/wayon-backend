@@ -24,8 +24,7 @@ import lombok.NoArgsConstructor;
 public class ContaCorrente{
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long contaCorrente;
+	private String numeroConta;
 	
 	private BigDecimal saldo;
 	
@@ -33,7 +32,7 @@ public class ContaCorrente{
 		this.saldo = dto.getSaldo();
 	}
 	
-	public ContaCorrente(Long contaCorrente) {
-		this.contaCorrente = contaCorrente;
+	public ContaCorrente(String contaCorrente) {
+		this.numeroConta = contaCorrente;
 	}
 }

@@ -31,7 +31,7 @@ public class OperacaoFinanceiraController {
 	}
 	
 	@GetMapping("/extrato/{contaCorrente}")
-	public ResponseEntity<?> getExtrato(@PathVariable Long contaCorrente) {
+	public ResponseEntity<?> getExtrato(@PathVariable String contaCorrente) {
 		return ResponseEntity.ok(service.getExtrato(contaCorrente));
 	}
 }

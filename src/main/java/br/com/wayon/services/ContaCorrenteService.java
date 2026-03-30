@@ -30,7 +30,7 @@ public class ContaCorrenteService {
 		//Registrando o início das atividades da nova conta
 		OperacaoFinanceiraDto novaOperacao = new OperacaoFinanceiraDto();
 		novaOperacao.setContaCorrente(novaConta);
-		novaOperacao.setDataExecucao(LocalDateTime.now());
+		novaOperacao.setDataExecucao(LocalDateTime.now().toLocalDate());
 		novaOperacao.setSaldoInstantaneo(novaConta.getSaldo());
 		novaOperacao.setTipoOperacao(EnumTipoOperacao.DEPOSITO);
 		novaOperacao.setValorOperacao(novaConta.getSaldo());
@@ -40,13 +40,13 @@ public class ContaCorrenteService {
 		return novaConta;
 	}
 	
-	public ContaCorrente sacar(Long contaCorrente, BigDecimal valorOperacao) {
+	public ContaCorrente sacar(String numeroConta, BigDecimal valorOperacao) {
 		
-		ContaCorrente contaCorrenteBase = repository.findById(contaCorrente).orElseThrow(() -> new ContaCorrenteInexistenteException("Conta Corrente Inexistente"));
+		ContaCorrente contaCorrenteBase = obterContaCorrente(numeroConta);
 		
 		if (contaCorrenteBase.getSaldo().compareTo(valorOperacao) < 0) {
 			//Saldo nulo não será permitido
-			throw new ContaCorrenteInexistenteException("Saldo indisponível para esta operação");
+			throw new ValorInvalidoException("Saldo indisponível para esta operação");
 			
 		} else {
 			//Atualiza o saldo
@@ -56,9 +56,9 @@ public class ContaCorrenteService {
 		}
 	}
 
-	public ContaCorrente depositar(Long contaCorrente, BigDecimal valorOperacao) {
+	public ContaCorrente depositar(String numeroConta, BigDecimal valorOperacao) {
 		
-		ContaCorrente contaCorrenteBase = repository.findById(contaCorrente).orElseThrow(() -> new ContaCorrenteInexistenteException("Conta Corrente Inexistente"));
+		ContaCorrente contaCorrenteBase = obterContaCorrente(numeroConta);
 		
 		if(valorOperacao.compareTo(BigDecimal.ZERO) <= 0) {
 			throw new ValorInvalidoException("Valor da operação deve ser maior que zero");
@@ -68,6 +68,10 @@ public class ContaCorrenteService {
 		BigDecimal novoSaldo = contaCorrenteBase.getSaldo().add(valorOperacao);
 		contaCorrenteBase.setSaldo(novoSaldo);
 		return repository.save(contaCorrenteBase);
+	}
+	
+	private ContaCorrente obterContaCorrente(String numeroConta) {
+		return repository.findById(numeroConta).orElseThrow(() -> new ContaCorrenteInexistenteException("Conta Corrente Inexistente"));
 	}
 	
 	private ContaCorrente novaContaCorrente(ContaCorrenteDto contaCorrente) {
